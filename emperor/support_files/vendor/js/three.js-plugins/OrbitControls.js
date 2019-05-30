@@ -444,11 +444,32 @@ THREE.OrbitControls = function ( object, domElement ) {
 		rotateEnd.set( event.clientX, event.clientY );
 		rotateDelta.subVectors( rotateEnd, rotateStart );
 
+
 		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+		var horiMouseAngle = 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed;
+
+
+
+		var horizontal_angle = scope.getAzimuthalAngle() - horiMouseAngle;
+		var vertical_angle = scope.getPolarAngle();
+
+		var snapDistance = (horizontal_angle % (0.5 * Math.PI))/ (0.5 * Math.PI);
+
+		console.log('angle: '+ horizontal_angle);
+		console.log('distance: '+ snapDistance);
+
+		//if (rotateDelta.x)
+
+		if (Math.abs(snapDistance) < 0.1 || Math.abs(snapDistance) > 0.9){
+			var snapAngle = Math.round(horizontal_angle / 0.5 * Math.PI) * 0.5 * Math.PI;
+			console.log('SNAP TO: '+ snapAngle);
+			//rotateLeft( - horizontal_angle + snapAngle);
+			// sphericalDelta.theta = snapAngle;
+			horiMouseAngle = sphericalDelta.theta - snapAngle;
+		}
 
 		// rotating across whole screen goes 360 degrees around
-		rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
-
+		rotateLeft( horiMouseAngle );
 		// rotating up and down along whole screen attempts to go 360, but limited to 180
 		rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
@@ -501,6 +522,22 @@ THREE.OrbitControls = function ( object, domElement ) {
 	function handleMouseUp( event ) {
 
 		// console.log( 'handleMouseUp' );
+		var horizontal_angle = scope.getAzimuthalAngle();
+		var vertical_angle = scope.getPolarAngle();
+
+		var snapDistance = (horizontal_angle % (0.5 * Math.PI))/ (0.5 * Math.PI);
+
+		console.log('angle: '+ horizontal_angle);
+		console.log('distance: '+ snapDistance);
+
+		if (Math.abs(snapDistance) < 0.1 || Math.abs(snapDistance) > 0.9){
+			var snapAngle = Math.round(horizontal_angle / 0.5 * Math.PI) * 0.5 * Math.PI;
+			console.log('SNAP TO: '+ snapAngle);
+			//rotateLeft( - horizontal_angle + snapAngle);
+			sphericalDelta.theta = snapAngle
+		}
+
+		scope.update();
 
 	}
 
